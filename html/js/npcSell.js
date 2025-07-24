@@ -118,6 +118,9 @@ $('#progress-sales').mouseenter(function(e) {
 function toggleNPCSellUI(show) {
     if (show) {
         selectedItemName = null;
+        selectedItemLabel = null;
+        currentDialogId = 'start';
+        npcQuantity = {};
         loadDialog("start");
 
         $('.npcSell-background').fadeIn(200);
@@ -126,6 +129,7 @@ function toggleNPCSellUI(show) {
         $('#dialog-backpack-container').hide();
         $('#dialog-interactive-arrow').hide();
         $('#dialog-title').hide();
+        $('#arrow-for-select-item').hide();
 
         $('#npcSell-container').fadeOut(200);
         $('.npcSell-background').fadeOut(200);
@@ -469,6 +473,10 @@ function responseClick(element, response) {
     
                         // dialogs['iWillTake'].npcText = randomTranslate("dialog_npc_take", npcQuantity[itemToSellName], itemToSellName);
                         response.nextDialogId = 'iWillTake';
+                            .fail(function() {
+                                console.error('Failed to process sell action');
+                                Notify(translate("notify_input_wrong"), "error", 2500);
+                            });
                     } else {
                         response.nextDialogId = 'noThanks';
                     }
@@ -497,10 +505,19 @@ function responseClick(element, response) {
                     $.post('https://nc-selldrugs/successInteraction', JSON.stringify({ itemName: itemToSellName, amount: npcQuantity[itemToSellName], price: sellPriceValue }))
                 } else {
                     $.post('https://nc-selldrugs/dialogBack', JSON.stringify({ action: response.action }))
+                        .done(function(response) {
+                            // Handle successful response if needed
+                        })
+                        .fail(function() {
+                            console.error('Failed to send dialogBack action');
+                        });
                 }
 
                 if (response.action == 'exit') {
                     npcQuantity = {};
+                    selectedItemName = null;
+                    selectedItemLabel = null;
+                    currentDialogId = 'start';
                 }
 
             }
@@ -526,6 +543,14 @@ function loadDialog(dialogId) {
         } else {
             npcText = randomTranslate(dialogs[dialogId].npcText)
         }
+        
+        // Reset dialog state for fresh start
+        if (dialogId === "start") {
+            selectedItemName = null;
+            selectedItemLabel = null;
+            npcQuantity = {};
+        }
+        
         updateResponses(npcText, dialogs[dialogId].responses);
     }
 }

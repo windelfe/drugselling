@@ -134,6 +134,7 @@ RegisterNUICallback('dialogBack', function(data, cb)
         UsingPed = nil
         DestroyCam(cam, true)
         cam = nil
+        cb(true)
     elseif data.action == "sell" then
         cfg.Prefix.Functions.TriggerCallback('SellDrugs:Calculate_Percentage', function(result, totalNegotiation)
             cb( { result = result, totalNegotiation = totalNegotiation } )

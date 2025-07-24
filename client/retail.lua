@@ -114,7 +114,6 @@ function Start_Interaction(buyer)
                     if IsPedWalking(UsingPed) or IsPedRunning(UsingPed) then
                         ClearPedTasksImmediately(buyer)
                         TriggerServerEvent("SellDrugs:Send_Animation", NetworkGetNetworkIdFromEntity(buyer), Random_Anim.dict, Random_Anim.anim, 8.0, -1, true)
-                        break
                     end
                     Wait(0)
                 end
